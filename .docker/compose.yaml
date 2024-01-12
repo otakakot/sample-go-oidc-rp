@@ -1,0 +1,37 @@
+services:
+  zitadel:
+    container_name: ${APP_NAME}-zitadel
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - workdir=cmd/zitadel
+    ports:
+      - 8080:8080
+    environment:
+      ENV: local
+      PORT: 8080
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      ISSUER: "https://accounts.google.com"
+    volumes:
+      - ../:/app
+    restart: always
+  coreos:
+    container_name: ${APP_NAME}-coreos
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - workdir=cmd/coreos
+    ports:
+      - 8081:8081
+    environment:
+      ENV: local
+      PORT: 8081
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      ISSUER: "https://accounts.google.com"
+    volumes:
+      - ../:/app
+    restart: always

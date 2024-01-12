@@ -1,0 +1,139 @@
+openapi: 3.0.3
+info:
+  title: sample-go-oidc-rp
+  description: |-
+    This is the Sample Go OIDC RP APP API documentation.
+  termsOfService: https://localhost:8080
+  contact:
+    email: kotaro.otaka@example.com
+  license:
+    name: Apache 2.0
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: OIDC
+    description: OIDC
+paths:
+  /:
+    get:
+      tags:
+        - OIDC
+      summary: Login
+      description: Login
+      responses:
+        "200":
+          description: OK
+          content:
+            text/html:
+              schema:
+                type: string
+  /auth:
+    get:
+      tags:
+        - OIDC
+      summary: OIDC Authorization
+      description: OIDC Authorization
+      operationId: auth
+      responses:
+        "302":
+          description: Found
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+                example: authorization_endpoint
+            Set-Cookie:
+              required: true
+              description: Set-Cookie
+              schema:
+                type: string
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /callback:
+    get:
+      tags:
+        - OIDC
+      summary: OIDC Callback
+      description: OIDC Callback
+      operationId: callback
+      parameters:
+        - name: code
+          in: query
+          required: true
+          description: code
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          description: state
+          schema:
+            type: string
+            example: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        - name: state
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      responses:
+        "200":
+          description: OK
+          headers:
+            Set-Cookie:
+              required: true
+              description: Set-Cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CallbackResponseSchema"
+        "500":
+          description: Internal Server Error
+          headers:
+            Set-Cookie:
+              required: true
+              description: Set-Cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    CallbackResponseSchema:
+      type: object
+      properties:
+        id_token:
+          type: string
+          description: id_token
+          example: id_token
+        email:
+          type: string
+          format: email
+          description: email
+          example: example@example.com
+        password:
+          type: string
+          description: password
+          example: password
+      required:
+        - id_token
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
